@@ -1,0 +1,131 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+// Define the structure for a binary tree node
+struct Node
+{
+    int data;
+    Node *left;
+    Node *right;
+
+    Node(int val)
+    {
+        data = val;
+        left = right = NULL;
+    }
+};
+
+// Function to build a binary tree from a string representation
+Node *buildTree(string str)
+{
+    // Corner Case: If the input string is empty or starts with 'N', return NULL
+    if (str.length() == 0 || str[0] == 'N')
+        return NULL;
+
+    // Creating a vector of strings from the input string by splitting it by space
+    vector<string> ip;
+
+    istringstream iss(str);
+    for (string str; iss >> str;)
+        ip.push_back(str);
+
+    // Create the root of the tree with the first element of the vector
+    Node *root = new Node(stoi(ip[0]));
+
+    // Push the root to a queue
+    queue<Node *> queue;
+    queue.push(root);
+
+    // Starting from the second element in the vector
+    int i = 1;
+    while (!queue.empty() && i < ip.size())
+    {
+
+        // Get and remove the front of the queue
+        Node *currNode = queue.front();
+        queue.pop();
+
+        // Get the current node's value from the string
+        string currVal = ip[i];
+
+        // If the left child is not null (not 'N')
+        if (currVal != "N")
+        {
+
+            // Create the left child for the current node
+            currNode->left = new Node(stoi(currVal));
+
+            // Push it to the queue for further processing
+            queue.push(currNode->left);
+        }
+
+        // Move to the next element in the vector
+        i++;
+
+        // Check if we've reached the end of the vector
+        if (i >= ip.size())
+            break;
+
+        // Get the value for the right child
+        currVal = ip[i];
+
+        // If the right child is not null (not 'N')
+        if (currVal != "N")
+        {
+
+            // Create the right child for the current node
+            currNode->right = new Node(stoi(currVal));
+
+            // Push it to the queue for further processing
+            queue.push(currNode->right);
+        }
+
+        // Move to the next element in the vector
+        i++;
+    }
+
+    // Return the root of the constructed binary tree
+    return root;
+}
+
+// The Solution class contains the isIsomorphic function to check if two trees are isomorphic.
+class Solution
+{
+public:
+    // Return True if the given trees are isomorphic. Else return False.
+    bool isIsomorphic(Node *root1, Node *root2)
+    {
+        // If both trees are empty, they are isomorphic.
+        if (!root1 && !root2)
+            return true;
+
+        // If one tree is empty and the other is not, they are not isomorphic.
+        if (!root1 || !root2)
+            return false;
+
+        // Check if the data of the current nodes is the same and recursively
+        // check for isomorphism for all four possible combinations of children.
+        return (root1->data == root2->data) && ((isIsomorphic(root1->left, root2->left) && isIsomorphic(root1->right, root2->right)) ||
+                                                (isIsomorphic(root1->left, root2->right) && isIsomorphic(root1->right, root2->left)));
+    }
+};
+
+int main()
+{
+    int t;
+    scanf("%d ", &t);
+    while (t--)
+    {
+        string s1, s2;
+        getline(cin, s1);
+        getline(cin, s2);
+        Node *root1 = buildTree(s1);
+        Node *root2 = buildTree(s2);
+        Solution obj;
+        if (obj.isIsomorphic(root1, root2))
+            cout << "Yes" << endl;
+        else
+            cout << "No" << endl;
+    }
+    return 0;
+}
